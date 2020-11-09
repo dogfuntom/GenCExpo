@@ -1,5 +1,15 @@
 mergeInto(LibraryManager.library, {
   $input: undefined,
+  $p5c: undefined,
+
+  HasP5Canvas: function () {
+    p5c = document.getElementById('p5SketchCanvas');
+    if (p5c) {
+      p5c.style.display = 'none';
+      return true;
+    }
+    return false;
+  },
 
   InitInputForm: function () {
     input = document.createElement('input');
@@ -40,6 +50,6 @@ mergeInto(LibraryManager.library, {
     //const pixel = new Uint8Array([0, 0, 255, 255]);  // opaque blue
     GLctx.texSubImage2D(GLctx.TEXTURE_2D, level, 0, 0,
                   width, height, srcFormat, srcType,
-                  document.getElementById('p5SketchCanvas'));
+                  p5c);
   }
 });

@@ -9,6 +9,8 @@ function setup() {
   pg = createGraphics(400, 400);
   pg.background(200);
   ctx = pg.elt.getContext('2d');
+
+  frameRate(30);
 }
 
 function draw() {
