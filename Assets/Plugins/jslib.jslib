@@ -1,32 +1,45 @@
 mergeInto(LibraryManager.library, {
+  $input: undefined,
 
-  Hello: function () {
-    window.alert("Hello, world!");
+  InitInputForm: function () {
+    input = document.createElement('input');
+    input.value = '42';
+    input.id = 'input';
+
+    document.body.appendChild(input);
   },
 
-  HelloString: function (str) {
-    window.alert(Pointer_stringify(str));
-  },
-
-  PrintFloatArray: function (array, size) {
-    for(var i = 0; i < size; i++)
-    console.log(HEAPF32[(array >> 2) + i]);
-  },
-
-  AddNumbers: function (x, y) {
-    return x + y;
-  },
-
-  StringReturnValueFunction: function () {
-    var returnStr = "bla";
+  GetInputText: function() {
+    var returnStr = input.value;
     var bufferSize = lengthBytesUTF8(returnStr) + 1;
     var buffer = _malloc(bufferSize);
     stringToUTF8(returnStr, buffer, bufferSize);
     return buffer;
   },
 
-  BindWebGLTexture: function (texture) {
+  BindWebGLTexture2: function (texture) {
     GLctx.bindTexture(GLctx.TEXTURE_2D, GL.textures[texture]);
+    const level = 0;
+    const width = 1;
+    const height = 1;
+    const srcFormat = GLctx.RGBA;
+    const srcType = GLctx.UNSIGNED_BYTE;
+    const pixel = new Uint8Array([0, 0, 255, 255]);  // opaque blue
+    GLctx.texSubImage2D(GLctx.TEXTURE_2D, level, 0, 0,
+                  width, height, srcFormat, srcType,
+                  pixel);
   },
 
+  BindWebGLTexture3: function (texture) {
+    GLctx.bindTexture(GLctx.TEXTURE_2D, GL.textures[texture]);
+    const level = 0;
+    const width = 400;
+    const height = 400;
+    const srcFormat = GLctx.RGBA;
+    const srcType = GLctx.UNSIGNED_BYTE;
+    //const pixel = new Uint8Array([0, 0, 255, 255]);  // opaque blue
+    GLctx.texSubImage2D(GLctx.TEXTURE_2D, level, 0, 0,
+                  width, height, srcFormat, srcType,
+                  document.getElementById('p5SketchCanvas'));
+  }
 });

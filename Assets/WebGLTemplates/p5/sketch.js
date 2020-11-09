@@ -4,6 +4,7 @@ var ctx;
 function setup() {
   const c = createCanvas(500, 500, WEBGL);
   c.elt.style.border = '2px solid purple';
+  c.elt.id = 'p5SketchCanvas';
 
   pg = createGraphics(400, 400);
   pg.background(200);
