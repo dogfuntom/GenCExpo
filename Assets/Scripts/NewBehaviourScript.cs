@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Runtime.InteropServices;
 
+// TODO: Use conditionals to allow running in editor.
 public class NewBehaviourScript : MonoBehaviour
 {
     [DllImport("__Internal")]
