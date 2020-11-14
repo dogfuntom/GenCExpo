@@ -1,46 +1,29 @@
 ﻿using UnityEngine;
+#if UNITY_WEBGL && !UNITY_EDITOR
 using System.Runtime.InteropServices;
+#endif
 
-// TODO: Use conditionals to allow running in editor.
 public class NewBehaviourScript : MonoBehaviour
 {
-    [DllImport("__Internal")]
-    private static extern void InitInputForm();
-
-    //[DllImport("__Internal")]
-    //private static extern void HelloString(string str);
-
-    //[DllImport("__Internal")]
-    //private static extern void PrintFloatArray(float[] array, int size);
-
+#if UNITY_WEBGL && !UNITY_EDITOR
     [DllImport("__Internal")]
     private static extern bool HasP5Canvas();
+#else
+    private static bool HasP5Canvas() => false;
+#endif
 
-    [DllImport("__Internal")]
-    private static extern string GetInputText();
-
-    //[DllImport("__Internal")]
-    //private static extern void BindWebGLTexture(int texture);
-    [DllImport("__Internal")]
-    private static extern void BindWebGLTexture2(int texture);
+#if UNITY_WEBGL && !UNITY_EDITOR
     [DllImport("__Internal")]
     private static extern void BindWebGLTexture3(int texture);
+#else
+    private static void BindWebGLTexture3(int texture) => Debug.LogWarningFormat("{0}() is called but ignored because it's supported only on WebGL.", nameof(BindWebGLTexture3));
+#endif
 
     private Renderer rend;
     private Texture texture;
 
     void Start()
     {
-        //{
-        //    WebGLInput.captureAllKeyboardInput = false;
-        //    InitInputForm();
-        //}
-
-        // var texture = new Texture2D(0, 0, TextureFormat.ARGB32, false);
-        // texture.Resize(1, 1, TextureFormat.ARGB32, false);
-        // texture.Apply();
-        // BindWebGLTexture2(texture.GetNativeTextureID());
-
         rend = GetComponentInChildren<Renderer>();
 
         const int width = 400;
