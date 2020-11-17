@@ -10,6 +10,7 @@ namespace GenCExpo
     {
         [SerializeField] private string _name;
         [SerializeField] private byte _materialIndex;
+        [SerializeField] private byte _restartSeconds;
 
 #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
@@ -20,12 +21,20 @@ namespace GenCExpo
 
 #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
+        private static extern void RecreateP5Instance(string name);
+#else
+        private static void RecreateP5Instance(string name) => Debug.LogWarningFormat("{0}() is called but ignored because it's supported only on WebGL.", nameof(RecreateP5Instance));
+#endif
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+        [DllImport("__Internal")]
         private static extern void GetP5CanvasTexture(string name, int texture);
 #else
         private static void GetP5CanvasTexture(string name, int texture) => Debug.LogWarningFormat("{0}() is called but ignored because it's supported only on WebGL.", nameof(GetP5CanvasTexture));
 #endif
 
         private Texture _texture;
+        private float _timer;
 
         private void Start()
         {
@@ -42,6 +51,13 @@ namespace GenCExpo
             if (HasP5Instance(_name))
             {
                 GetP5CanvasTexture(_name, _texture.GetNativeTexturePtr().ToInt32());
+
+                if (_restartSeconds > 0 && _timer > _restartSeconds)
+                {
+                    RecreateP5Instance(_name);
+                    _timer = 0;
+                }
+                _timer += Time.deltaTime;
             }
         }
     }

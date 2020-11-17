@@ -33,5 +33,11 @@ mergeInto(LibraryManager.library, {
     GLctx.texSubImage2D(GLctx.TEXTURE_2D, level, 0, 0,
                   width, height, srcFormat, srcType,
                   p5canvases.get(name));
+  },
+
+  RecreateP5Instance: function (name) {
+    name = Pointer_stringify(name);
+    RestartByName(name);
+    p5canvases.delete(name);
   }
 });
