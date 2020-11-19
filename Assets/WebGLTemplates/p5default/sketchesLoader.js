@@ -1,7 +1,8 @@
 const p5sketches = new Map([
     ['very_nov11', very_nov11],
     ['MaxKam_nov13', MaxKam_nov13],
-    ['VovDud_nov16', VovDud_nov16]]);
+    ['VovDud_nov16', VovDud_nov16],
+    ['Victor_favorite', Victor_favorite]]);
 
 let p5instances = new Map();
 
