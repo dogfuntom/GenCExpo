@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Runtime.CompilerServices;
+using UnityEngine;
 #if UNITY_WEBGL && !UNITY_EDITOR
 using System.Runtime.InteropServices;
 #endif
@@ -11,6 +12,8 @@ namespace GenCExpo
         [SerializeField] private string _name;
         [SerializeField] private byte _materialIndex;
         [SerializeField] private byte _restartSeconds;
+
+        [SerializeField] private GameObject _plaque;
 
 #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
@@ -58,6 +61,21 @@ namespace GenCExpo
                     _timer = 0;
                 }
                 _timer += Time.deltaTime;
+            }
+
+            ShowPlaqueIfAimedAt();
+        }
+
+        private void ShowPlaqueIfAimedAt()
+        {
+            var ray = Camera.main.ViewportPointToRay(Vector3.one * .5f);
+            if (GetComponent<Collider>().Raycast(ray, out var result, 8))
+            {
+                _plaque.SetActive(true);
+            }
+            else
+            {
+                _plaque.SetActive(false);
             }
         }
     }
