@@ -1,6 +1,6 @@
-﻿using System.Runtime.CompilerServices;
-using UnityEngine;
+﻿using UnityEngine;
 #if UNITY_WEBGL && !UNITY_EDITOR
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 #endif
 
@@ -9,10 +9,13 @@ namespace GenCExpo
     [RequireComponent(typeof(Renderer))]
     public class P5Exhibit: MonoBehaviour
     {
+        private const byte PlaqueDistance = 4;
+
         [SerializeField] private string _name;
         [SerializeField] private byte _materialIndex;
         [SerializeField] private byte _restartSeconds;
 
+        [Tooltip("Can be null.")]
         [SerializeField] private GameObject _plaque;
 
 #if UNITY_WEBGL && !UNITY_EDITOR
@@ -63,20 +66,14 @@ namespace GenCExpo
                 _timer += Time.deltaTime;
             }
 
-            ShowPlaqueIfAimedAt();
+            if (_plaque)
+                ShowPlaqueIfAimedAt();
         }
 
         private void ShowPlaqueIfAimedAt()
         {
             var ray = Camera.main.ViewportPointToRay(Vector3.one * .5f);
-            if (GetComponent<Collider>().Raycast(ray, out var result, 8))
-            {
-                _plaque.SetActive(true);
-            }
-            else
-            {
-                _plaque.SetActive(false);
-            }
+            _plaque.SetActive(GetComponent<Collider>().Raycast(ray, out _, PlaqueDistance));
         }
     }
 }
