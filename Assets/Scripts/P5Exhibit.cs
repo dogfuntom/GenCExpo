@@ -20,16 +20,9 @@ namespace GenCExpo
 
 #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
-        private static extern bool HasP5Instance(string name);
+        private static extern bool InitP5Instance(string name);
 #else
-        private static bool HasP5Instance(string name) => false;
-#endif
-
-#if UNITY_WEBGL && !UNITY_EDITOR
-        [DllImport("__Internal")]
-        private static extern void RecreateP5Instance(string name);
-#else
-        private static void RecreateP5Instance(string name) => Debug.LogWarningFormat("{0}() is called but ignored because it's supported only on WebGL.", nameof(RecreateP5Instance));
+        private static bool InitP5Instance(string name) => default;
 #endif
 
 #if UNITY_WEBGL && !UNITY_EDITOR
@@ -39,14 +32,35 @@ namespace GenCExpo
         private static void GetP5CanvasTexture(string name, int texture) => Debug.LogWarningFormat("{0}() is called but ignored because it's supported only on WebGL.", nameof(GetP5CanvasTexture));
 #endif
 
-        private Texture _texture;
+#if UNITY_WEBGL && !UNITY_EDITOR
+        [DllImport("__Internal")]
+        private static extern int GetP5CanvasTextureWidth(string name);
+#else
+        private static int GetP5CanvasTextureWidth(string name) => default;
+#endif
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+        [DllImport("__Internal")]
+        private static extern int GetP5CanvasTextureHeight(string name);
+#else
+        private static int GetP5CanvasTextureHeight(string name) => default;
+#endif
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+        [DllImport("__Internal")]
+        private static extern void RecreateP5Instance(string name);
+#else
+        private static void RecreateP5Instance(string name) => Debug.LogWarningFormat("{0}() is called but ignored because it's supported only on WebGL.", nameof(RecreateP5Instance));
+#endif
+
+        private Texture2D _texture;
         private float _timer;
 
         private void Start()
         {
-            const int width = 400;
-            const int height = 400;
-            _texture = new Texture2D(width, height, TextureFormat.ARGB32, false);
+            //const int width = 400;
+            //const int height = 400;
+            _texture = new Texture2D(1, 1, TextureFormat.ARGB32, false);
 
             var rend = GetComponent<Renderer>();
             rend.materials[_materialIndex].mainTexture = _texture;
@@ -54,8 +68,17 @@ namespace GenCExpo
 
         private void Update()
         {
-            if (HasP5Instance(_name))
+            if (InitP5Instance(_name))
             {
+                var width = GetP5CanvasTextureWidth(name);
+                var height = GetP5CanvasTextureHeight(name);
+
+                if (width != _texture.width || height != _texture.height)
+                {
+                    _texture.Resize(width, height, TextureFormat.ARGB32, false);
+                    _texture.Apply();
+                }
+
                 GetP5CanvasTexture(_name, _texture.GetNativeTexturePtr().ToInt32());
 
                 if (_restartSeconds > 0 && _timer > _restartSeconds)
