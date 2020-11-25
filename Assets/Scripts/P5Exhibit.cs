@@ -64,9 +64,6 @@ namespace GenCExpo
 
             var rend = GetComponent<Renderer>();
             rend.materials[_materialIndex].mainTexture = _texture;
-
-            if (string.IsNullOrEmpty(_name))
-                enabled = false;
         }
 
         private void Update()
