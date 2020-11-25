@@ -64,10 +64,19 @@ namespace GenCExpo
 
             var rend = GetComponent<Renderer>();
             rend.materials[_materialIndex].mainTexture = _texture;
+
+            if (string.IsNullOrEmpty(_name))
+                enabled = false;
         }
 
         private void Update()
         {
+            if (_plaque)
+                ShowPlaqueIfAimedAt();
+
+            if (string.IsNullOrEmpty(_name))
+                return;
+
             if (InitP5Instance(_name))
             {
                 var width = GetP5CanvasTextureWidth(name);
@@ -88,9 +97,6 @@ namespace GenCExpo
                 }
                 _timer += Time.deltaTime;
             }
-
-            if (_plaque)
-                ShowPlaqueIfAimedAt();
         }
 
         private void ShowPlaqueIfAimedAt()
