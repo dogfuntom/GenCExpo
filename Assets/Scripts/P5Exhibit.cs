@@ -58,8 +58,9 @@ namespace GenCExpo
 
         private void Start()
         {
-            //const int width = 400;
-            //const int height = 400;
+            if (string.IsNullOrEmpty(_name))
+                return;
+
             _texture = new Texture2D(1, 1, TextureFormat.ARGB32, false);
 
             var rend = GetComponent<Renderer>();
