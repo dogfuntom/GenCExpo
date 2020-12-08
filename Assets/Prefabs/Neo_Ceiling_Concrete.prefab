@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &4066022390715684725
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1124462881827896, guid: 293e268728ae1704b931bbef9043c082, type: 3}
+      propertyPath: m_Name
+      value: Neo_Ceiling_Concrete
+      objectReference: {fileID: 0}
+    - target: {fileID: 1124462881827896, guid: 293e268728ae1704b931bbef9043c082, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
+      objectReference: {fileID: 0}
+    - target: {fileID: 4633411911301862, guid: 293e268728ae1704b931bbef9043c082, type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4633411911301862, guid: 293e268728ae1704b931bbef9043c082, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4633411911301862, guid: 293e268728ae1704b931bbef9043c082, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4633411911301862, guid: 293e268728ae1704b931bbef9043c082, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 23000130358317168, guid: 293e268728ae1704b931bbef9043c082, type: 3}
+      propertyPath: m_Materials.Array.data[1]
+      value: 
+      objectReference: {fileID: 2100000, guid: 4a11ac89ec3635a4b896556552983d54, type: 2}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 293e268728ae1704b931bbef9043c082, type: 3}
