@@ -92,3 +92,5 @@ lightmap-*_comp_*.png*
 
 # Due to some kind of bug, info/exclude ignores this, to I had to add it right into .gitignore too.
 Assets/Models/Materials/_LookDev.meta
+/Assets/Samples
+/Assets/Samples.meta
