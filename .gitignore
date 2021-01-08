@@ -90,5 +90,11 @@ crashlytics-build.properties
 *.exr*
 lightmap-*_comp_*.png*
 
+## GenC_Expo
+
 # Due to some kind of bug, info/exclude ignores this, to I had to add it right into .gitignore too.
 Assets/Models/Materials/_LookDev.meta
+
+# More Unity
+/Assets/Samples
+/Assets/Samples.meta
