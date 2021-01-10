@@ -1300,7 +1300,7 @@ function _emscripten_asm_const_ii(code, a0) {
  return ASM_CONSTS[code](a0);
 }
 STATIC_BASE = GLOBAL_BASE;
-STATICTOP = STATIC_BASE + 2875120;
+STATICTOP = STATIC_BASE + 2867088;
 __ATINIT__.push({
  func: (function() {
   __GLOBAL__sub_I_AccessibilityScriptingClasses_cpp();
@@ -3278,7 +3278,7 @@ __ATINIT__.push({
   ___emscripten_environ_constructor();
  })
 });
-var STATIC_BUMP = 2875120;
+var STATIC_BUMP = 2867088;
 Module["STATIC_BASE"] = STATIC_BASE;
 Module["STATIC_BUMP"] = STATIC_BUMP;
 var tempDoublePtr = STATICTOP;
@@ -3293,6 +3293,7 @@ function _GetP5CanvasTexture(name, texture) {
  const height = canvas.height;
  const srcFormat = GLctx.RGBA;
  const srcType = GLctx.UNSIGNED_BYTE;
+ GLctx.pixelStorei(GLctx.UNPACK_FLIP_Y_WEBGL, true);
  GLctx.texSubImage2D(GLctx.TEXTURE_2D, level, 0, 0, width, height, srcFormat, srcType, canvas);
 }
 function _GetP5CanvasTextureHeight(name) {
