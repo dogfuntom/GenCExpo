@@ -42,6 +42,7 @@ mergeInto(LibraryManager.library, {
     const height = canvas.height;
     const srcFormat = GLctx.RGBA;
     const srcType = GLctx.UNSIGNED_BYTE;
+    GLctx.pixelStorei(GLctx.UNPACK_FLIP_Y_WEBGL, true);
     GLctx.texSubImage2D(GLctx.TEXTURE_2D, level, 0, 0,
                   width, height, srcFormat, srcType,
                   canvas);

@@ -12,7 +12,8 @@ namespace GenCExpo
     {
         private const byte PlaqueDistance = 4;
 
-        [SerializeField] private string _name;
+        [UnityEngine.Serialization.FormerlySerializedAs("_name")]
+        [SerializeField] private string _key;
         [SerializeField] private byte _materialIndex;
         [SerializeField] private byte _restartSeconds;
 
@@ -64,7 +65,7 @@ namespace GenCExpo
 
         private void Start()
         {
-            if (string.IsNullOrEmpty(_name))
+            if (string.IsNullOrEmpty(_key))
                 return;
 
             _texture = new Texture2D(1, 1, TextureFormat.ARGB32, false);
@@ -86,19 +87,19 @@ namespace GenCExpo
             if (_plaque)
                 ShowPlaqueIfAimedAt();
 
-            if (string.IsNullOrEmpty(_name))
+            if (string.IsNullOrEmpty(_key))
                 return;
 
             Profiler.BeginSample(nameof(InitP5Instance));
-            var ready = InitP5Instance(_name);
+            var ready = InitP5Instance(_key);
             Profiler.EndSample();
 
             if (!ready || !_isVisible)
                 return;
 
             Profiler.BeginSample("Get width and height");
-            var width = GetP5CanvasTextureWidth(name);
-            var height = GetP5CanvasTextureHeight(name);
+            var width = GetP5CanvasTextureWidth(_key);
+            var height = GetP5CanvasTextureHeight(_key);
             Profiler.EndSample();
 
             if (width != _texture.width || height != _texture.height)
@@ -114,13 +115,13 @@ namespace GenCExpo
             Profiler.EndSample();
 
             Profiler.BeginSample(nameof(GetP5CanvasTexture));
-            GetP5CanvasTexture(_name, ptr);
+            GetP5CanvasTexture(_key, ptr);
             Profiler.EndSample();
 
             if (_restartSeconds > 0 && _timer > _restartSeconds)
             {
                 Profiler.BeginSample(nameof(RecreateP5Instance));
-                RecreateP5Instance(_name);
+                RecreateP5Instance(_key);
                 Profiler.EndSample();
 
                 _timer = 0;

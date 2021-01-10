@@ -6,7 +6,8 @@ const p5sketches = new Map([
     ['Gle_Trz_nov7', Gle_Trz_nov7],
     ['baku_nov2', baku_nov2],
     ['gvlas_nov8', gvlas_nov8],
-    ['quil_oct31', quil_oct31]]);
+    ['quil_oct31', quil_oct31],
+    ['shirosayuri_210104', shirosayuri_210104]]);
 
 let p5instances = new Map();
 
