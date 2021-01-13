@@ -22,37 +22,37 @@ namespace GenCExpo
 
 #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
-        private static extern bool InitP5Instance(string name);
+        private static extern bool PlayP5(string name);
 #else
-        private static bool InitP5Instance(string name) => default;
+        private static bool PlayP5(string name) => default;
 #endif
 
 #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
-        private static extern void GetP5CanvasTexture(string name, int texture);
+        private static extern void GetP5Texture(string name, int texture);
 #else
-        private static void GetP5CanvasTexture(string name, int texture) => Debug.LogWarningFormat("{0}() is called but ignored because it's supported only on WebGL.", nameof(GetP5CanvasTexture));
+        private static void GetP5Texture(string name, int texture) => Debug.LogWarningFormat("{0}() is called but ignored because it's supported only on WebGL.", nameof(GetP5Texture));
 #endif
 
 #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
-        private static extern int GetP5CanvasTextureWidth(string name);
+        private static extern int GetP5Width(string name);
 #else
-        private static int GetP5CanvasTextureWidth(string name) => default;
+        private static int GetP5Width(string name) => default;
 #endif
 
 #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
-        private static extern int GetP5CanvasTextureHeight(string name);
+        private static extern int GetP5Height(string name);
 #else
-        private static int GetP5CanvasTextureHeight(string name) => default;
+        private static int GetP5Height(string name) => default;
 #endif
 
 #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
-        private static extern void RecreateP5Instance(string name);
+        private static extern void RecreateP5(string name);
 #else
-        private static void RecreateP5Instance(string name) => Debug.LogWarningFormat("{0}() is called but ignored because it's supported only on WebGL.", nameof(RecreateP5Instance));
+        private static void RecreateP5(string name) => Debug.LogWarningFormat("{0}() is called but ignored because it's supported only on WebGL.", nameof(RecreateP5));
 #endif
 
         private Texture2D _texture;
@@ -90,16 +90,16 @@ namespace GenCExpo
             if (string.IsNullOrEmpty(_key))
                 return;
 
-            Profiler.BeginSample(nameof(InitP5Instance));
-            var ready = InitP5Instance(_key);
+            Profiler.BeginSample(nameof(PlayP5));
+            var ready = PlayP5(_key);
             Profiler.EndSample();
 
             if (!ready || !_isVisible)
                 return;
 
             Profiler.BeginSample("Get width and height");
-            var width = GetP5CanvasTextureWidth(_key);
-            var height = GetP5CanvasTextureHeight(_key);
+            var width = GetP5Width(_key);
+            var height = GetP5Height(_key);
             Profiler.EndSample();
 
             if (width != _texture.width || height != _texture.height)
@@ -114,14 +114,14 @@ namespace GenCExpo
             var ptr = _texture.GetNativeTexturePtr().ToInt32();
             Profiler.EndSample();
 
-            Profiler.BeginSample(nameof(GetP5CanvasTexture));
-            GetP5CanvasTexture(_key, ptr);
+            Profiler.BeginSample(nameof(GetP5Texture));
+            GetP5Texture(_key, ptr);
             Profiler.EndSample();
 
             if (_restartSeconds > 0 && _timer > _restartSeconds)
             {
-                Profiler.BeginSample(nameof(RecreateP5Instance));
-                RecreateP5Instance(_key);
+                Profiler.BeginSample(nameof(RecreateP5));
+                RecreateP5(_key);
                 Profiler.EndSample();
 
                 _timer = 0;

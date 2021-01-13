@@ -1,7 +1,13 @@
 mergeInto(LibraryManager.library, {
   $p5canvases: undefined,
 
-  InitP5Instance: function (name) {
+  /**
+   * Tries to resume or launch p5 sketch.
+   *
+   * @param {string} name ID of the p5 sketch.
+   * @return {boolean} Whether the p5 sketch is playing now (launched, resumed or already was playing).
+   */
+  PlayP5: function (name) {
     if (typeof p5canvases === 'undefined') {
       p5canvases = new Map();
     }
@@ -18,20 +24,22 @@ mergeInto(LibraryManager.library, {
 
     p5c.style.display = 'none';
     p5canvases.set(name, p5c);
+
+    Play(name);
     return true;
   },
 
-  GetP5CanvasTextureWidth: function (name) {
+  GetP5Width: function (name) {
     name = Pointer_stringify(name);
     return p5canvases.get(name).width;
   },
 
-  GetP5CanvasTextureHeight: function (name) {
+  GetP5Height: function (name) {
     name = Pointer_stringify(name);
-    return p5canvases.get(name).width;
+    return p5canvases.get(name).height;
   },
 
-  GetP5CanvasTexture: function (name, texture) {
+  GetP5Texture: function (name, texture) {
     name = Pointer_stringify(name);
 
     GLctx.bindTexture(GLctx.TEXTURE_2D, GL.textures[texture]);
@@ -48,9 +56,10 @@ mergeInto(LibraryManager.library, {
                   canvas);
   },
 
-  RecreateP5Instance: function (name) {
+  RecreateP5: function (name) {
     name = Pointer_stringify(name);
-    RestartByName(name);
+    Stop(name);
+    Play(name);
     p5canvases.delete(name);
   }
 });
