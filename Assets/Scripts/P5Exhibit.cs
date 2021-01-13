@@ -55,13 +55,25 @@ namespace GenCExpo
         private static void RecreateP5(string name) => Debug.LogWarningFormat("{0}() is called but ignored because it's supported only on WebGL.", nameof(RecreateP5));
 #endif
 
+#if UNITY_WEBGL && !UNITY_EDITOR
+        [DllImport("__Internal")]
+        private static extern void PauseP5(string name);
+#else
+        private static void PauseP5(string name) => Debug.LogWarningFormat("{0}() is called but ignored because it's supported only on WebGL.", nameof(PauseP5));
+#endif
+
         private Texture2D _texture;
         private float _timer;
 
         private bool _isVisible = true;
 
-        private void OnBecameVisible() => _isVisible = true;
-        private void OnBecameInvisible() => _isVisible = false;
+        private void OnBecameInvisible()
+        {
+            PauseP5(_key);
+            _isVisible = false;
+        }
+
+        void OnBecameVisible() => _isVisible = true;
 
         private void Start()
         {
@@ -90,11 +102,14 @@ namespace GenCExpo
             if (string.IsNullOrEmpty(_key))
                 return;
 
+            if (!_isVisible)
+                return;
+
             Profiler.BeginSample(nameof(PlayP5));
             var ready = PlayP5(_key);
             Profiler.EndSample();
 
-            if (!ready || !_isVisible)
+            if (!ready)
                 return;
 
             Profiler.BeginSample("Get width and height");

@@ -14,7 +14,10 @@ mergeInto(LibraryManager.library, {
 
     name = Pointer_stringify(name);
 
-    if (p5canvases.has(name)) { return true; }
+    if (p5canvases.has(name)) {
+      Play(name);
+      return true;
+    }
 
     const p5div = document.getElementById(name);
     if (!p5div) { return false; }
@@ -54,6 +57,11 @@ mergeInto(LibraryManager.library, {
     GLctx.texSubImage2D(GLctx.TEXTURE_2D, level, 0, 0,
                   width, height, srcFormat, srcType,
                   canvas);
+  },
+
+  PauseP5: function (name) {
+    name = Pointer_stringify(name);
+    Pause(name);
   },
 
   RecreateP5: function (name) {
