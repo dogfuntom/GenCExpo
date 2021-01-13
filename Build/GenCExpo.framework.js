@@ -3284,7 +3284,11 @@ Module["STATIC_BUMP"] = STATIC_BUMP;
 var tempDoublePtr = STATICTOP;
 STATICTOP += 16;
 assert(tempDoublePtr % 8 == 0);
-function _GetP5CanvasTexture(name, texture) {
+function _GetP5Height(name) {
+ name = Pointer_stringify(name);
+ return p5canvases.get(name).height;
+}
+function _GetP5Texture(name, texture) {
  name = Pointer_stringify(name);
  GLctx.bindTexture(GLctx.TEXTURE_2D, GL.textures[texture]);
  const level = 0;
@@ -3296,33 +3300,9 @@ function _GetP5CanvasTexture(name, texture) {
  GLctx.pixelStorei(GLctx.UNPACK_FLIP_Y_WEBGL, true);
  GLctx.texSubImage2D(GLctx.TEXTURE_2D, level, 0, 0, width, height, srcFormat, srcType, canvas);
 }
-function _GetP5CanvasTextureHeight(name) {
+function _GetP5Width(name) {
  name = Pointer_stringify(name);
  return p5canvases.get(name).width;
-}
-function _GetP5CanvasTextureWidth(name) {
- name = Pointer_stringify(name);
- return p5canvases.get(name).width;
-}
-function _InitP5Instance(name) {
- if (typeof p5canvases === "undefined") {
-  p5canvases = new Map;
- }
- name = Pointer_stringify(name);
- if (p5canvases.has(name)) {
-  return true;
- }
- const p5div = document.getElementById(name);
- if (!p5div) {
-  return false;
- }
- const p5c = p5div.getElementsByClassName("p5Canvas").item(0);
- if (!p5c) {
-  return false;
- }
- p5c.style.display = "none";
- p5canvases.set(name, p5c);
- return true;
 }
 function _JS_Cursor_SetImage(ptr, length) {
  var binary = "";
@@ -3637,9 +3617,36 @@ function _JS_SystemInfo_HasWebGL() {
 function _JS_SystemInfo_IsMobile() {
  return Module.SystemInfo.mobile;
 }
-function _RecreateP5Instance(name) {
+function _PauseP5(name) {
  name = Pointer_stringify(name);
- RestartByName(name);
+ Pause(name);
+}
+function _PlayP5(name) {
+ if (typeof p5canvases === "undefined") {
+  p5canvases = new Map;
+ }
+ name = Pointer_stringify(name);
+ if (p5canvases.has(name)) {
+  Play(name);
+  return true;
+ }
+ const p5div = document.getElementById(name);
+ if (!p5div) {
+  return false;
+ }
+ const p5c = p5div.getElementsByClassName("p5Canvas").item(0);
+ if (!p5c) {
+  return false;
+ }
+ p5c.style.display = "none";
+ p5canvases.set(name, p5c);
+ Play(name);
+ return true;
+}
+function _RecreateP5(name) {
+ name = Pointer_stringify(name);
+ Stop(name);
+ Play(name);
  p5canvases.delete(name);
 }
 function ___atomic_compare_exchange_8(ptr, expected, desiredl, desiredh, weak, success_memmodel, failure_memmodel) {
@@ -18927,10 +18934,9 @@ Module.asmLibraryArg = {
  "invoke_vji": invoke_vji,
  "invoke_vjiiii": invoke_vjiiii,
  "invoke_vjji": invoke_vjji,
- "_GetP5CanvasTexture": _GetP5CanvasTexture,
- "_GetP5CanvasTextureHeight": _GetP5CanvasTextureHeight,
- "_GetP5CanvasTextureWidth": _GetP5CanvasTextureWidth,
- "_InitP5Instance": _InitP5Instance,
+ "_GetP5Height": _GetP5Height,
+ "_GetP5Texture": _GetP5Texture,
+ "_GetP5Width": _GetP5Width,
  "_JS_Cursor_SetImage": _JS_Cursor_SetImage,
  "_JS_Cursor_SetShow": _JS_Cursor_SetShow,
  "_JS_Eval_ClearInterval": _JS_Eval_ClearInterval,
@@ -18969,7 +18975,9 @@ Module.asmLibraryArg = {
  "_JS_SystemInfo_HasFullscreen": _JS_SystemInfo_HasFullscreen,
  "_JS_SystemInfo_HasWebGL": _JS_SystemInfo_HasWebGL,
  "_JS_SystemInfo_IsMobile": _JS_SystemInfo_IsMobile,
- "_RecreateP5Instance": _RecreateP5Instance,
+ "_PauseP5": _PauseP5,
+ "_PlayP5": _PlayP5,
+ "_RecreateP5": _RecreateP5,
  "__ZSt18uncaught_exceptionv": __ZSt18uncaught_exceptionv,
  "___atomic_compare_exchange_8": ___atomic_compare_exchange_8,
  "___atomic_fetch_add_8": ___atomic_fetch_add_8,
