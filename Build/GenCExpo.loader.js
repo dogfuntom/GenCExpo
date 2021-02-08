@@ -1,6 +1,26 @@
 function createUnityInstance(canvas, config, onProgress) {
   onProgress = onProgress || function () {};
 
+  function errorListener(e) {
+    var error = e.type == "unhandledrejection" && typeof e.reason == "object" ? e.reason : typeof e.error == "object" ? e.error : null;
+    var message = error ? error.toString() : typeof e.message == "string" ? e.message : typeof e.reason == "string" ? e.reason : "";
+    if (error && typeof error.stack == "string")
+      message += "\n" + error.stack.substring(!error.stack.lastIndexOf(message, 0) ? message.length : 0).replace(/(^\n*|\n*$)/g, "");
+    if (!message || !Module.stackTraceRegExp || !Module.stackTraceRegExp.test(message))
+      return;
+    var filename =
+      e instanceof ErrorEvent ? e.filename :
+      error && typeof error.fileName == "string" ? error.fileName :
+      error && typeof error.sourceURL == "string" ? error.sourceURL :
+      "";
+    var lineno =
+      e instanceof ErrorEvent ? e.lineno :
+      error && typeof error.lineNumber == "number" ? error.lineNumber :
+      error && typeof error.line == "number" ? error.line :
+      0;
+    errorHandler(message, filename, lineno);
+  }
+
   var Module = {
     canvas: canvas,
     webglContextAttributes: {
@@ -47,9 +67,21 @@ function createUnityInstance(canvas, config, onProgress) {
 
   Module.streamingAssetsUrl = new URL(Module.streamingAssetsUrl, document.URL).href;
 
-  Module.disabledCanvasEvents.forEach(function (disabledCanvasEvent) {
-    canvas.addEventListener(disabledCanvasEvent, function (e) { e.preventDefault(); });
+  // Operate on a clone of Module.disabledCanvasEvents field so that at Quit time
+  // we will ensure we'll remove the events that we created (in case user has
+  // modified/cleared Module.disabledCanvasEvents in between)
+  var disabledCanvasEvents = Module.disabledCanvasEvents.slice();
+
+  function preventDefault(e) {
+    e.preventDefault();
+  }
+
+  disabledCanvasEvents.forEach(function (disabledCanvasEvent) {
+    canvas.addEventListener(disabledCanvasEvent, preventDefault);
   });
+
+  window.addEventListener("error", errorListener);
+  window.addEventListener("unhandledrejection", errorListener);
 
   var unityInstance = {
     Module: Module,
@@ -67,6 +99,15 @@ function createUnityInstance(canvas, config, onProgress) {
       return new Promise(function (resolve, reject) {
         Module.shouldQuit = true;
         Module.onQuit = resolve;
+
+        // Clear the event handlers we added above, so that the event handler
+        // functions will not hold references to this JS function scope after
+        // exit, to allow JS garbage collection to take place.
+        disabledCanvasEvents.forEach(function (disabledCanvasEvent) {
+          canvas.removeEventListener(disabledCanvasEvent, preventDefault);
+        });
+        window.removeEventListener("error", errorListener);
+        window.removeEventListener("unhandledrejection", errorListener);
       });
     },
   };
@@ -202,33 +243,12 @@ function createUnityInstance(canvas, config, onProgress) {
     errorHandler.didShowErrorMessage = true;
   }
 
-  function errorListener(e) {
-    var error = e.type == "unhandledrejection" && typeof e.reason == "object" ? e.reason : typeof e.error == "object" ? e.error : null;
-    var message = error ? error.toString() : typeof e.message == "string" ? e.message : typeof e.reason == "string" ? e.reason : "";
-    if (error && typeof error.stack == "string")
-      message += "\n" + error.stack.substring(!error.stack.lastIndexOf(message, 0) ? message.length : 0).replace(/(^\n*|\n*$)/g, "");
-    if (!message || !Module.stackTraceRegExp || !Module.stackTraceRegExp.test(message))
-      return;
-    var filename =
-      e instanceof ErrorEvent ? e.filename :
-      error && typeof error.fileName == "string" ? error.fileName :
-      error && typeof error.sourceURL == "string" ? error.sourceURL :
-      "";
-    var lineno =
-      e instanceof ErrorEvent ? e.lineno :
-      error && typeof error.lineNumber == "number" ? error.lineNumber :
-      error && typeof error.line == "number" ? error.line :
-      0;
-    errorHandler(message, filename, lineno);
-  }
 
   Module.abortHandler = function (message) {
     errorHandler(message, "", 0);
     return true;
   };
 
-  window.addEventListener("error", errorListener);
-  window.addEventListener("unhandledrejection", errorListener);
   Error.stackTraceLimit = Math.max(Error.stackTraceLimit || 0, 50);
 
   function progressUpdate(id, e) {
@@ -516,8 +536,17 @@ function createUnityInstance(canvas, config, onProgress) {
         var script = document.createElement("script");
         script.src = Module.frameworkUrl;
         script.onload = function () {
-          delete script.onload;
-          resolve(unityFramework);
+          // Adding the framework.js script to DOM created a global
+          // 'unityFramework' variable that should be considered internal.
+          // Capture the variable to local scope and clear it from global
+          // scope so that JS garbage collection can take place on
+          // application quit.
+          var fw = unityFramework;
+          unityFramework = null;
+          // Also ensure this function will not hold any JS scope
+          // references to prevent JS garbage collection.
+          script.onload = null;
+          resolve(fw);
         }
         document.body.appendChild(script);
         Module.deinitializers.push(function() {
