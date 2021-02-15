@@ -1300,7 +1300,7 @@ function _emscripten_asm_const_ii(code, a0) {
  return ASM_CONSTS[code](a0);
 }
 STATIC_BASE = GLOBAL_BASE;
-STATICTOP = STATIC_BASE + 2869344;
+STATICTOP = STATIC_BASE + 2872464;
 __ATINIT__.push({
  func: (function() {
   __GLOBAL__sub_I_AccessibilityScriptingClasses_cpp();
@@ -3286,7 +3286,7 @@ __ATINIT__.push({
   ___emscripten_environ_constructor();
  })
 });
-var STATIC_BUMP = 2869344;
+var STATIC_BUMP = 2872464;
 Module["STATIC_BASE"] = STATIC_BASE;
 Module["STATIC_BUMP"] = STATIC_BUMP;
 var tempDoublePtr = STATICTOP;
@@ -3294,13 +3294,13 @@ STATICTOP += 16;
 assert(tempDoublePtr % 8 == 0);
 function _GetP5Height(name) {
  name = Pointer_stringify(name);
- return p5canvases.get(name).height;
+ return p7.p6s.get(name).div.getElementsByClassName("p5Canvas").item(0).height;
 }
 function _GetP5Texture(name, texture) {
  name = Pointer_stringify(name);
  GLctx.bindTexture(GLctx.TEXTURE_2D, GL.textures[texture]);
  const level = 0;
- const canvas = p5canvases.get(name);
+ const canvas = p7.p6s.get(name).div.getElementsByClassName("p5Canvas").item(0);
  const width = canvas.width;
  const height = canvas.height;
  const srcFormat = GLctx.RGBA;
@@ -3310,7 +3310,7 @@ function _GetP5Texture(name, texture) {
 }
 function _GetP5Width(name) {
  name = Pointer_stringify(name);
- return p5canvases.get(name).width;
+ return p7.p6s.get(name).div.getElementsByClassName("p5Canvas").item(0).width;
 }
 function _JS_Cursor_SetImage(ptr, length) {
  var binary = "";
@@ -3627,35 +3627,22 @@ function _JS_SystemInfo_IsMobile() {
 }
 function _PauseP5(name) {
  name = Pointer_stringify(name);
- Pause(name);
+ p7.pause(name);
 }
 function _PlayP5(name) {
- if (typeof p5canvases === "undefined") {
-  p5canvases = new Map;
- }
  name = Pointer_stringify(name);
- if (p5canvases.has(name)) {
-  Play(name);
-  return true;
- }
- const p5div = document.getElementById(name);
- if (!p5div) {
-  return false;
- }
- const p5c = p5div.getElementsByClassName("p5Canvas").item(0);
- if (!p5c) {
-  return false;
- }
- p5c.style.display = "none";
- p5canvases.set(name, p5c);
- Play(name);
+ if (!p7.p6s.has(name)) return false;
+ p7.play(name);
+ p7.p6s.get(name).div.style.display = "none";
  return true;
 }
 function _RecreateP5(name) {
  name = Pointer_stringify(name);
- Stop(name);
- Play(name);
- p5canvases.delete(name);
+ p7.restart(name);
+}
+function _StopP5(name) {
+ name = Pointer_stringify(name);
+ p7.stop(name);
 }
 function ___atomic_compare_exchange_8(ptr, expected, desiredl, desiredh, weak, success_memmodel, failure_memmodel) {
  var pl = HEAP32[ptr >> 2];
@@ -18987,6 +18974,7 @@ Module.asmLibraryArg = {
  "_PauseP5": _PauseP5,
  "_PlayP5": _PlayP5,
  "_RecreateP5": _RecreateP5,
+ "_StopP5": _StopP5,
  "__ZSt18uncaught_exceptionv": __ZSt18uncaught_exceptionv,
  "___atomic_compare_exchange_8": ___atomic_compare_exchange_8,
  "___atomic_fetch_add_8": ___atomic_fetch_add_8,
