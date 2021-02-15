@@ -62,18 +62,46 @@ namespace GenCExpo
         private static void PauseP5(string name) => Debug.LogWarningFormat("{0}() is called but ignored because it's supported only on WebGL.", nameof(PauseP5));
 #endif
 
+#if UNITY_WEBGL && !UNITY_EDITOR
+        [DllImport("__Internal")]
+        private static extern void StopP5(string name);
+#else
+        private static void StopP5(string name) => Debug.LogWarningFormat("{0}() is called but ignored because it's supported only on WebGL.", nameof(StopP5));
+#endif
+
         private Texture2D _texture;
         private float _timer;
 
         private bool _isVisible = true;
+        private bool _isStopped = true;
+
+        private P5Pool _pool;
+
+        public void Stop()
+        {
+            _isStopped = true;
+            StopP5(_key);
+        }
+
+        public void Play()
+        {
+            _isStopped = false;
+        }
 
         private void OnBecameInvisible()
         {
             PauseP5(_key);
             _isVisible = false;
+            if (_pool)
+                _pool.OnP5BecameInvisible(this);
         }
 
-        void OnBecameVisible() => _isVisible = true;
+        private void OnBecameVisible()
+        {
+            _isVisible = true;
+            if (_pool)
+                _pool.OnP5BecameVisible(this);
+        }
 
         private void Start()
         {
@@ -84,6 +112,10 @@ namespace GenCExpo
 
             var rend = GetComponent<Renderer>();
             rend.materials[_materialIndex].mainTexture = _texture;
+
+            _pool = GetComponentInParent<P5Pool>();
+            if (!_pool)
+                _isStopped = false;
         }
 
         private void ShowPlaqueIfAimedAt()
@@ -102,7 +134,7 @@ namespace GenCExpo
             if (string.IsNullOrEmpty(_key))
                 return;
 
-            if (!_isVisible)
+            if (_isStopped || !_isVisible)
                 return;
 
             Profiler.BeginSample(nameof(PlayP5));

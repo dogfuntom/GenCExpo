@@ -1,3 +1,24 @@
 {
-    "FSharp.suggestGitignore": false
+    "files.exclude": {
+        "**/.git": true,
+        "**/.DS_Store": true,
+        "**/*.meta": true,
+        "**/*.*.meta": true,
+        "**/*.unity": true,
+        "**/*.unityproj": true,
+        "**/*.mat": true,
+        "**/*.fbx": true,
+        "**/*.FBX": true,
+        "**/*.tga": true,
+        "**/*.cubemap": true,
+        "**/*.prefab": true,
+        "**/Library": true,
+        "**/ProjectSettings": true,
+        "**/Temp": true,
+        "**/Logs": true,
+        "**/obj": true,
+        "**/UIElementsSchema": true,
+        "**/LICENSE": true,
+        "**/.vs": true
+    }
 }

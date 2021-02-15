@@ -1,5 +1,5 @@
 mergeInto(LibraryManager.library, {
-  $p5canvases: undefined,
+  //$p7: undefined,
 
   /**
    * Tries to resume or launch p5 sketch.
@@ -8,38 +8,22 @@ mergeInto(LibraryManager.library, {
    * @return {boolean} Whether the p5 sketch is playing now (launched, resumed or already was playing).
    */
   PlayP5: function (name) {
-    if (typeof p5canvases === 'undefined') {
-      p5canvases = new Map();
-    }
-
     name = Pointer_stringify(name);
+    if (!p7.p6s.has(name)) return false;
 
-    if (p5canvases.has(name)) {
-      Play(name);
-      return true;
-    }
-
-    const p5div = document.getElementById(name);
-    if (!p5div) { return false; }
-
-    const p5c = p5div.getElementsByClassName('p5Canvas').item(0);
-    if (!p5c) { return false; }
-
-    p5c.style.display = 'none';
-    p5canvases.set(name, p5c);
-
-    Play(name);
+    p7.play(name);
+    p7.p6s.get(name).div.style.display = 'none';
     return true;
   },
 
   GetP5Width: function (name) {
     name = Pointer_stringify(name);
-    return p5canvases.get(name).width;
+    return p7.p6s.get(name).div.getElementsByClassName('p5Canvas').item(0).width;
   },
 
   GetP5Height: function (name) {
     name = Pointer_stringify(name);
-    return p5canvases.get(name).height;
+    return p7.p6s.get(name).div.getElementsByClassName('p5Canvas').item(0).height;
   },
 
   GetP5Texture: function (name, texture) {
@@ -48,7 +32,7 @@ mergeInto(LibraryManager.library, {
     GLctx.bindTexture(GLctx.TEXTURE_2D, GL.textures[texture]);
     const level = 0;
 
-    const canvas = p5canvases.get(name);
+    const canvas = p7.p6s.get(name).div.getElementsByClassName('p5Canvas').item(0);
     const width = canvas.width;
     const height = canvas.height;
     const srcFormat = GLctx.RGBA;
@@ -61,13 +45,16 @@ mergeInto(LibraryManager.library, {
 
   PauseP5: function (name) {
     name = Pointer_stringify(name);
-    Pause(name);
+    p7.pause(name);
   },
 
   RecreateP5: function (name) {
     name = Pointer_stringify(name);
-    Stop(name);
-    Play(name);
-    p5canvases.delete(name);
+    p7.restart(name);
+  },
+
+  StopP5: function (name) {
+    name = Pointer_stringify(name);
+    p7.stop(name);
   }
 });
