@@ -1,7 +1,5 @@
-
 Shader "ShaderMan/Reflection of cubemap z"
 {
-
     Properties{
         _Mirrorness("Reflection Intensity", Range(0, 1)) = 1
         _Roughness("Roughness", Range(0, 2)) = 0
@@ -48,6 +46,8 @@ Shader "ShaderMan/Reflection of cubemap z"
             #define IVORY 1.
             #define BLUE 2.
             #define BLACK 3.
+            #define TIME (_Time * 0.06
+            //#define TIME (float3(42.0, 42.0, 42.0))
 
             #define PHI (sqrt(5.)*0.5 + 0.5)
 
@@ -76,9 +76,9 @@ Shader "ShaderMan/Reflection of cubemap z"
                 for(int i = 0; i < 4; i++) {
                     fixed3 ps = p;
                     // ps *= 2.;
-                    ps += fixed3(1. * sin(_Time.y * 1.5 + 10. * fixed(i)),
-                        1. * sin(_Time.y * 2.5 + 10. * fixed(i) + 10.),
-                        1. * sin(_Time.y * 3.5 + 10. * fixed(i) + 2.) );
+                    ps += fixed3(1. * sin(TIME.y * 1.5 + 10. * fixed(i)),
+                        1. * sin(TIME.y * 2.5 + 10. * fixed(i) + 10.),
+                        1. * sin(TIME.y * 3.5 + 10. * fixed(i) + 2.) );
                     spheres = opSmoothUnion(spheres, length(ps) - .5, 1.5);
                 }
 
@@ -86,9 +86,9 @@ Shader "ShaderMan/Reflection of cubemap z"
                 for(i = 0; i < 4; i++) {
                     fixed3 ps = p;
                     // ps *= 2.;
-                    ps += fixed3( 1. * sin(_Time.y * 1.7 + 20. * fixed(i)),
-                        1. * sin(_Time.y * 2.3 + 20. * fixed(i) + 10.),
-                        1. * sin(_Time.y * 3.1 + 20. * fixed(i) + 2.) );
+                    ps += fixed3( 1. * sin(TIME.y * 1.7 + 20. * fixed(i)),
+                        1. * sin(TIME.y * 2.3 + 20. * fixed(i) + 10.),
+                        1. * sin(TIME.y * 3.1 + 20. * fixed(i) + 2.) );
                     spheres = opSmoothSubtraction(spheres, length(ps) - .5, 1.5);
                 }
                 return fixed2(spheres, BLUE);
@@ -119,16 +119,6 @@ Shader "ShaderMan/Reflection of cubemap z"
                 return normalize(n);
             }
 
-            fixed3 getRayDirection (fixed3 ro, fixed2 uv, fixed3 lookAt) {
-                fixed3 rd;
-                rd = normalize(fixed3(uv - fixed2(0, 0.), 1.));
-                fixed3 lookTo = lookAt - ro;
-                fixed horizAngle = acos(dot(lookTo.xz, rd.xz) / length(lookTo.xz) * length(rd.xz));
-
-                rd.xz = mul(rd.xz, Rot(horizAngle));
-                return rd;
-            }
-
             fixed3 getRayDir(fixed2 uv, fixed3 p, fixed3 l, fixed z) {
                 fixed3 f = normalize(l-p),
                 r = normalize(cross(fixed3(0,1,0), f)),
@@ -150,19 +140,9 @@ Shader "ShaderMan/Reflection of cubemap z"
                 return o;
             }
 
-            fixed4 frag(VertexOutput i) : SV_Target
+            fixed4 render(fixed3 ro, fixed3 rd, fixed3 worldPos)
             {
-                fixed2 uv = (i.uv-.5*1)/1;
-
-                // ray origin
-                fixed3 ro = fixed3(
-                    5. * sin(_Time.y * .2),
-                    0,
-                    5. * cos(_Time.y * .2));
                 fixed zoom = 1.100;
-
-                // ray direction
-                fixed3 rd = getRayDir(uv, ro, fixed3(0,0,0), 1.);
 
                 fixed3 rm = rayMarch(ro, rd);
                 fixed d = rm[0];
@@ -200,10 +180,9 @@ Shader "ShaderMan/Reflection of cubemap z"
 
                     // Relfection cube.
                     {
-                        // Direction of ray from the camera towards the object surface
-                        half3 worldViewDir = normalize(UnityWorldSpaceViewDir(i.worldPos));
-                        // Direction of ray after hitting the surface of object
-                        half3 reflection = reflect(-worldViewDir, n);
+                        // For some reason, have to flip X, different handness, maybe?
+                        // Also, have to flip Z to get actual reflection instead of "unflipped selfie".
+                        half3 reflection = half3(-ref.x, ref.y, -ref.z);
                         /*If Roughness feature is not needed : UNITY_SAMPLE_TEXCUBE(unity_SpecCube0, reflection) can be used instead.
                         It chooses the correct LOD value based on camera distance*/
                         half4 skyData = UNITY_SAMPLE_TEXCUBE_LOD(unity_SpecCube0, reflection, _Roughness);
@@ -215,6 +194,20 @@ Shader "ShaderMan/Reflection of cubemap z"
                 }
 
                 return fixed4(color, alpha);
+            }
+
+            fixed4 frag(VertexOutput i) : SV_Target
+            {
+                fixed2 uv = (i.uv-.5*1)/1;
+
+                // ray origin
+                half3 worldViewDir = UnityWorldSpaceViewDir(i.worldPos);
+                fixed3 ro = -normalize(worldViewDir) * 5;
+
+                // ray direction
+                fixed3 rd = getRayDir(uv, ro, fixed3(0,0,0), 1.);
+
+                return render(ro, rd, i.worldPos);
             }
             ENDCG
         }
