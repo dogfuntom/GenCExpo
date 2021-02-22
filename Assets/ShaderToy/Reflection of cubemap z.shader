@@ -46,8 +46,7 @@ Shader "ShaderMan/Reflection of cubemap z"
             #define IVORY 1.
             #define BLUE 2.
             #define BLACK 3.
-            #define TIME (_Time * 0.06
-            //#define TIME (float3(42.0, 42.0, 42.0))
+            #define TIME (_Time * 0.0625)
 
             #define PHI (sqrt(5.)*0.5 + 0.5)
 
