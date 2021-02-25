@@ -13,7 +13,7 @@ Material:
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
+  m_CustomRenderQueue: 2450
   stringTagMap: {}
   disabledShaderPasses: []
   m_SavedProperties:
@@ -29,7 +29,11 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _Mirrorness: 0.75
+    - _RayOriginScale: 5
     - _ReflecIntens: 1
     - _Roughness: 0.25
+    - _ZoomRD: 1
+    - _ZoomRO: 5
+    - _ZoomVertex: 1
     m_Colors: []
   m_BuildTextureStacks: []
