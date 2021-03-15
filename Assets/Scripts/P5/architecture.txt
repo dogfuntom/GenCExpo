@@ -1,0 +1,13 @@
+﻿We don't want to couple a slot (where a work can be shown) and a work (the work itself) together.
+Because it wastes time when editing the scene (e.g. moving exhibits).
+And it makes ponentially interesting logic hard to implement, like distributing works randomly.
+While it's not clear if randomization itself is a good idea, it's still a clear sign of smelly maintainability.
+
+At the very least, there must be 3 things:
+* Slot (directly a part of scene).
+* Work (generative 2d image shown by/in the slot).
+* Manager (limits the combined LOD of all slots/works).
+
+Slot should be a component because it's a direct part of the scene.
+Manager should be a component because it's hard to implement it otherwise (not worth it at current stage of the project).
+Work should be a plain object to reduce the number of components (and because it has no business knowing the dirty implementation details).
