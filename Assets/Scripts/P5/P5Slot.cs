@@ -1,9 +1,4 @@
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using GenCExpo;
 using UnityEngine;
-using UnityEngine.Assertions;
 using UnityEngine.Profiling;
 
 namespace GenC.P5
@@ -65,18 +60,26 @@ namespace GenC.P5
                 _director.OnSlotBecameVisible(this);
         }
 
-        private void Reset()
+        private void OnValidate()
         {
-            _director = GetComponentInParent<P5Exhibits>();
-            _renderer = GetComponentInChildren<Renderer>();
+            _director ??= GetComponentInParent<P5Exhibits>();
+            _renderer ??= GetComponentInChildren<Renderer>();
+
+            if (!GetComponent<Renderer>())
+            {
+                Debug.LogWarningFormat(
+                    gameObject,
+                    "{0} works only when there's a {1} on the same game object.",
+                    nameof(P5Slot),
+                    nameof(Renderer));
+            }
         }
 
         private void Start()
         {
             _texture = new Texture2D(1, 1, TextureFormat.ARGB32, false);
 
-            var rend = GetComponent<Renderer>();
-            rend.materials[_materialIndex].mainTexture = _texture;
+            _renderer.materials[_materialIndex].mainTexture = _texture;
 
             if (_work == null)
                 enabled = false;

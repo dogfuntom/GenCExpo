@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -15,6 +14,7 @@ namespace GenC.P5
         [Space]
         [SerializeField] private P5Slot[] _slots;
         [SerializeField] private P5Work[] _works;
+        [SerializeField] private bool _shuffle = true;
 
         private readonly LinkedList<P5Slot> _invisible = new LinkedList<P5Slot>();
         private readonly List<P5Slot> _visible = new List<P5Slot>(64);
@@ -33,6 +33,22 @@ namespace GenC.P5
 
         private void Start()
         {
+            void swapWorks(int i, int j)
+            {
+                P5Work tmp = _works[i];
+                _works[i] = _works[j];
+                _works[j] = tmp;
+            }
+
+            if (_shuffle)
+            {
+                for (int i = _works.Length - 1; i >= 1; i--)
+                {
+                    int j = Random.Range(0, i - 1);
+                    swapWorks(i, j);
+                }
+            }
+
             var count = Mathf.Min(_slots.Length, _works.Length);
             for (int i = 0; i < count; i++)
             {
